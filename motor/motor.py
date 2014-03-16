@@ -2,32 +2,36 @@
 
 import RPIO
 
-
-#use pin 16/18 from GPIO
-
+#use GPIO Pin 14,15,18,23 for motor control
 #need 4 pins as gpio for pololu board.
-
-#AENBL: Right Motor PWM
-#APHASE Right Motor Direction
-#BENBL: Left Motor PWM
-#BPHASE Left Motor Direction
-
+#AENBL: Right Motor PWM        :GPIO15
+#APHASE Right Motor Direction  :GPIO14
+#BENBL: Left Motor PWM         :GPIO23
+#BPHASE Left Motor Direction   :GPIO18
 
 #here is rBot motor class
 class rMotor:
-
-#initialize motor, ask for AENBL,APHASE,BENBL,BPHASE pin
-    def initMotor(self,AENBL,APHASE,BENBL,BPHASE):
-        self.AENBL=AENBL;
-        self.APHASE=APHASE;
-        self.BENBL=BENBL;
-        self.BPHASE=BPHASE;
+#init to define all pins for motor control, these gpio pins have been tested
+    def __init__(self):
+        self.AENBL_Pin=14;
+        self.APHASE_Pin=15;
+        self.BENBL_Pin=18;
+        self.BPHASE_Pin=23;
+        print "GPIO pin defined!";
+        print "AENBL_pin=GPIO"+str(self.AENBL_Pin)+"\n"+"AENBL_pin=GPIO"+str(self.APHASE_Pin);
+        print "AENBL_pin=GPIO"+str(self.AENBL_Pin)+"\n"+"AENBL_pin=GPIO"+str(self.AENBL_Pin);
+               
+#initialize motor, set all 4pins output and start with 0,means direction fwd
+    def initMotor(self):
+        RPIO.setoutput(self.AENBL_PIN,RPIO.OUT,initial=RPIO.low);
+        RPIO.setoutput(self.APHASE_PIN,RPIO.OUT,initial=RPIO.low);
+        RPIO.setoutput(self.BENBL_PIN,RPIO.OUT,initial=RPIO.low);
+        RPIO.setoutput(self.BPHASE_PIN,RPIO.OUT,initial=RPIO.low);
         
-        return self;
-
 #set gpio for motor before start, set all 4pins are 0
-    def setMotor(self):
-
+    def setMotor(self,channel,speed):
+        
+    
         return self;
 
 #adjust speed and direction, direction "F" or "B", speed from 1 to 10
@@ -46,5 +50,6 @@ class rMotor:
         
         return self;
 
-
+motor1=rmotor();
+motor
         
