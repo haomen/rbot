@@ -15,41 +15,44 @@ from RPIO import PWM
 class rMotor:
 #init to define all pins for motor control, these gpio pins have been tested
     def __init__(self):
-        self.AENBL_Pin=14;
-        self.APHASE_Pin=15;
-        self.BENBL_Pin=18;
-        self.BPHASE_Pin=23;
+        self.AENBL_Pin=15;
+        self.APHASE_Pin=14;
+        self.BENBL_Pin=23;
+        self.BPHASE_Pin=18;
+        self.MODE_Pin=24;                                        #in PWM mode, MODE pin is high(1)
         print "GPIO pin defined!";
-        print "AENBL_pin=GPIO"+str(self.AENBL_Pin)+"\n"+"AENBL_pin=GPIO"+str(self.APHASE_Pin);
-        print "AENBL_pin=GPIO"+str(self.AENBL_Pin)+"\n"+"AENBL_pin=GPIO"+str(self.AENBL_Pin);
+        print "AENBL_pin=GPIO"+str(self.AENBL_Pin)+"\n"+"APHASE_pin=GPIO"+str(self.APHASE_Pin);
+        print "BENBL_pin=GPIO"+str(self.BENBL_Pin)+"\n"+"BPHASE_pin=GPIO"+str(self.BPHASE_Pin);
                
 #initialize motor, set all 4pins output and start with 0,means direction fwd
     def initMotor(self):
-        self.servo=PWM.Servo();#default PWM subcycle is 20ms and increment is 10us
-        RPIO.setup(self.AENBL_Pin,RPIO.OUT,initial=RPIO.LOW);
-        self.servo.set_servo(self.APHASE_Pin,0);
-        RPIO.setup(self.BENBL_Pin,RPIO.OUT,initial=RPIO.LOW);
-        self.servo.set_servo(self.BPHASE_Pin,0);
+        RPIO.setup(self.MODE_Pin,RPIO.OUT,initial=RPIO.HIGH);    #select PWM Mode;
+        self.servo=PWM.Servo();                                  #default PWM subcycle is 20ms and increment is 10us
+        RPIO.setup(self.APHASE_Pin,RPIO.OUT,initial=RPIO.LOW);   #default A to fwd direction
+        self.servo.set_servo(self.AENBL_Pin,0);                  #default A speed 0
+        RPIO.setup(self.BPHASE_Pin,RPIO.OUT,initial=RPIO.LOW);   #default B to fwd direction
+        self.servo.set_servo(self.BENBL_Pin,0);                  #default B speed 0  
         
 #set digital value for pwm, min 0,max 20000;
     def setMotor(self,channel,speed):
         if(channel=='A'):
-            self.servo.set_servo(self.APHASE_Pin,speed);
+            self.servo.set_servo(self.AENBL_Pin,speed);
         if(channel=='B'):
-            self.servo.set_servo(self.BPHASE_Pin,speed);
+            self.servo.set_servo(self.BENBL_Pin,speed);
+
 #set direction
     def setDirection(self,channel,direction):#direction 0:fwd, 1:bwd
         if(channel=='A'):
-            RPIO.output(self.AENBL_Pin,direction);
+            RPIO.output(self.APHASE_Pin,direction);
         if(channel=='B'):
-            RPIO.output(self.BENBL_Pin,direction);
+            RPIO.output(self.BPHASE_Pin,direction);
 
 #stop motor
     def stopMotor(self,channel):
         if(channel=='A'):
-            self.servo.stop_servo(self.APHASE_Pin);
+            self.servo.stop_servo(self.AENBL_Pin);
         if(channel=='B'):
-            self.servo.stop_servo(self.BPHASE_Pin);
+            self.servo.stop_servo(self.BENBL_Pin);
 
 #adjust speed and direction, direction "F" or "B", speed from 1 to 10
     def spdControl(self,LD,LS,RD,RS): #LD= Left Direction, LS=Left Speed,same for RD, RS
@@ -71,20 +74,18 @@ class rMotor:
 #this is the test case#
 motor1=rMotor();
 motor1.initMotor();
-motor1.setDirection('B',1);
+motor1.setDirection('A',0);
 for i in range(0,20):
     print "fwd counting on "+str(i);
-#    motor1.setMotor('A',0);
-    motor1.setMotor('B',i*1000);
-
+    motor1.setMotor('A',i*1000);
     time.sleep(1);
 print "stop servo"
-motor1.stopMotor('B');
-motor1.setDirection('B',0);
+motor1.stopMotor('A');
+motor1.setDirection('A',1);
 for i in range(0,20):
     print "bwd counting on "+str(i);
 #    motor1.setMotor('A',0);
-    motor1.setMotor('B',i*1000);
+#    motor1.setMotor('A',i*1000);
     time.sleep(1);
 print "stop"
-motor1.stopMotor('B');
+motor1.stopMotor('A');
