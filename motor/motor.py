@@ -69,61 +69,52 @@ class rMotor:
             print "stop channel A"
             self.setDirection('A',0);
             PWM.add_channel_pulse(self.A_CHANNEL,self.AENBL_Pin,0,0);
-#            PWM.clear_channel_gpio(0,self.AENBL_Pin)l;
         if(channel=='B'):
             print "stop channel B"
             self.setDirection('B',0);
             PWM.add_channel_pulse(self.B_CHANNEL,self.BENBL_Pin,0,0);
 
+#single channel motor control
+    def spdControl(self,channel,direction,speed):                #map speed from range(0,100) to (0,2000)
+        self.setDirection(channel,direction);
+        spd=speed*20;
+        if(spd==2000):                                           #except spd=2000 because max is 1999 -_-|||
+            spd=1999;
+        self.setMotor(channel,spd);
 
-# #adjust speed and direction, direction "F" or "B", speed from 1 to 10
-#     def spdControl(self,LD,LS,RD,RS): #LD= Left Direction, LS=Left Speed,same for RD, RS
-        
-#         return self;
-
-
-# #driving control, for the vehicle, all command i want is turn degree and speed
-#     def vehContrl(self,heading,speed):#heading from -90 to 90, speed 1-10)
-        
-#         return self;
-
-# #180 turn 0 turnning radius, left or right
-#     def turnAround(self,direction):
-        
-#         return self;
+#emergency stop
+    def eStop(self): 
+        PWM.cleanup();
+        RPIO.output(self.APHASE_Pin,RPIO.LOW);
+        RPIO.output(self.BPHASE_Pin,RPIO.LOW);
 
 
-#this is the test case#
-motor1=rMotor();
-motor1.initMotor();
-motor1.setDirection('A',motor1.FWD);
-for i in range(0,20):
-    print "fwd counting on "+str(i);
-    motor1.setMotor('A',i*100);
-    time.sleep(0.5);
-print "stop servo"
-motor1.stopMotor('A');
-motor1.setDirection('A',motor1.BWD);
-for i in range(1,20):
-    print "bwd counting on "+str(i);
-#    motor1.setMotor('A',0);
-    motor1.setMotor('A',2000-i*100);
-    time.sleep(0.5);
-print "stop"
-motor1.stopMotor('A');
-motor1.setDirection('B',motor1.FWD);
-for i in range(0,20):
-    print "fwd counting on "+str(i);
-    motor1.setMotor('B',i*100);
-    time.sleep(0.5);
-print "stop servo"
-motor1.stopMotor('B');
-motor1.setDirection('B',motor1.BWD);
-for i in range(1,20):
-    print "bwd counting on "+str(i);
-#    motor1.setMotor('B',0);
-    motor1.setMotor('B',2000-i*100);
-    time.sleep(0.5);
-print "stop"
-motor1.stopMotor('B');
-time.sleep(50);
+# #this is the test case#
+# motor1=rMotor();
+# motor1.initMotor();
+
+# for i in range(0,101):
+#     print "fwd counting on "+str(i);
+#     motor1.spdControl('A',motor1.FWD,i);
+#     time.sleep(0.1);
+# print "stop servo"
+# motor1.stopMotor('A');
+# for i in range(1,101):
+#     print "bwd counting on "+str(i);
+#     motor1.spdControl('A',motor1.BWD,i);
+#     time.sleep(0.1);
+# print "stop"
+# motor1.stopMotor('A');
+
+# for i in range(0,101):
+#     print "fwd counting on "+str(i);
+#     motor1.spdControl('B',motor1.FWD,i);
+#     time.sleep(0.1);
+# print "stop servo"
+# motor1.stopMotor('B');
+# for i in range(1,101):
+#     print "bwd counting on "+str(i);
+#     motor1.spdControl('B',motor1.BWD,i);
+#     time.sleep(0.1);
+# print "stop"
+# motor1.stopMotor('B');
